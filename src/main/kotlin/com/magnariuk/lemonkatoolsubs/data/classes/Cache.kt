@@ -5,6 +5,7 @@ import com.google.gson.annotations.Expose
 data class Cache(
     var actors: MutableList<Actor> = mutableListOf(),
     var resultFolderPath: String = "",
+    var removeUsedCharacters: Boolean = false,
     )
 
 data class Actor(

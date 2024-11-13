@@ -126,19 +126,27 @@ class Parser {
 
     fun createSubRip(filename: String, ass: Ass, characters: List<String>){
         val lines: MutableList<String> = mutableListOf()
-        var counter: Int = 1
-        ass.events.dialogues.forEach { dialogue ->
-            if(dialogue.actor in characters && !lines.contains("${dialogue.startTime} --> ${dialogue.endTime}")){
-                lines.add(counter.toString())
-                lines.add("${dialogue.startTime} --> ${dialogue.endTime}")
-                lines.add("[${dialogue.actor}]: ${dialogue.text.replace(Regex("\\{.*?}"), "")}") //.replace(Regex("\\{.*?}"), "")
-                lines.add("")
-                counter++
+        var counter = 2
+        println(filename)
+        println(characters.toString())
+        if (ass.events.dialogues.any { it.actor in characters }) {
+            lines.add("1")
+            lines.add("00:00:00,00 --> 00:00:00,1")
+            lines.add("   ")
+            lines.add("")
+
+
+            ass.events.dialogues.forEach { dialogue ->
+                if(dialogue.actor in characters && !lines.contains("${dialogue.startTime} --> ${dialogue.endTime}")){
+                    lines.add(counter.toString())
+                    lines.add("0${dialogue.startTime.replace(".", ",")} --> 0${dialogue.endTime.replace(".", ",")}")
+                    lines.add("[${dialogue.actor}]: ${dialogue.text.replace(Regex("\\{.*?}"), "")}") //.replace(Regex("\\{.*?}"), "")
+                    lines.add("")
+                    counter++
+                }
             }
+            writeToFile(filename, lines)
         }
-        writeToFile(filename, lines)
     }
-
-
 }
 

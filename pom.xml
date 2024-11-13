@@ -6,7 +6,7 @@
 
     <groupId>com.magnariuk</groupId>
     <artifactId>LemonkaToolSubs</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.9-SNAPSHOT</version>
     <name>LemonkaToolSubs</name>
 
     <properties>
@@ -66,6 +66,12 @@
             <artifactId>gson</artifactId>
             <version>2.11.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.4.2</version>
+        </dependency>
 
 
     </dependencies>
@@ -74,6 +80,18 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Main-Class>com.magnariuk.lemonkatoolsubs.MainKt</Main-Class>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -92,7 +110,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.magnariuk.lemonkatoolsubs/com.magnariuk.lemonkatoolsubs.HelloApplication
+                            <mainClass>com.magnariuk.lemonkatoolsubs.MainKt
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
@@ -128,7 +146,22 @@
                     <jvmTarget>11</jvmTarget>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>LemonkaToolSubs-1.9-1-SNAPSHOT</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
