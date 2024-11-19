@@ -36,8 +36,6 @@ class HelloApplication : Application() {
         val charactersListView = CheckComboBox<String>(FXCollections.observableArrayList(charactersList))
 
 
-
-
         val actorComboBox = ComboBox<String>().apply {
             actorsList.let { items.addAll(it) }
             selectionModel.selectFirst()
@@ -218,42 +216,44 @@ class HelloApplication : Application() {
             }
         }
 
-        val leftSideBox = VBox(10.0, actorsListItem, HBox(addActorField, addActorButton, removeActorButton)).apply {
+        val leftSideBox = VBox(10.0, actorsListItem, HBox(addActorField, addActorButton, removeActorButton).apply { alignment = Pos.CENTER }).apply {
             alignment = Pos.TOP_CENTER
         }
 
-        val rightSideBox = VBox(10.0, actorComboBox, charactersListView, assignCharactersButton).apply {
+        val rightSideBox = VBox(10.0, HBox(5.0, actorComboBox, showOtherActors).apply { alignment = Pos.CENTER }, charactersListView, assignCharactersButton).apply {
             alignment = Pos.TOP_CENTER
+        }
+
+        val runButton = Button("Створити (переконайтеся, що відкрили субтитри '.ass')").apply {
+            setOnAction {
+                val dirChooser = DirectoryChooser().apply {
+                    title = "Оберіть субтитри"
+                    initialDirectory = File(assLocation.text).parentFile.takeIf { it?.exists() == true } ?: File(System.getProperty("user.home"))
+                }
+                val selectedDir = dirChooser.showDialog(null)
+                selectedDir?.let {
+                    val actors = cacheController.getCache()?.actors
+                    actors?.forEach { actor ->
+                        assParser.createSubRip(it.absolutePath+"/${actor.actorName}.srt", ass!!, actor.characterNames.toList())
+                        Desktop.getDesktop().open(it)
+
+                    }
+                }
+            }
         }
 
         val mainVBox = VBox(20.0,
             fileChooserBox,
-            showOtherActors,
-            HBox(20.0, leftSideBox, rightSideBox).apply {
+            leftSideBox,
+            HBox(10.0, rightSideBox).apply {
                 alignment = Pos.CENTER
             },
-            Button("Створити (переконайтеся, що відкрили субтитри '.ass')").apply {
-                setOnAction {
-                    val dirChooser = DirectoryChooser().apply {
-                        title = "Оберіть субтитри"
-                        initialDirectory = File(assLocation.text).parentFile.takeIf { it?.exists() == true } ?: File(System.getProperty("user.home"))
-                    }
-                    val selectedDir = dirChooser.showDialog(null)
-                    selectedDir?.let {
-                        val actors = cacheController.getCache()?.actors
-                        actors?.forEach { actor ->
-                            assParser.createSubRip(it.absolutePath+"/${actor.actorName}.srt", ass!!, actor.characterNames.toList())
-                            Desktop.getDesktop().open(it)
-
-                        }
-                    }
-                }
-            }
+            runButton
         ).apply { alignment = Pos.TOP_CENTER }
 
         val scene = Scene(mainVBox, 800.0, 600.0)
         stage.scene = scene
-        stage.title = "Modpack Updater"
+        stage.title = "Lemonka Subs"
         stage.show()
     }
 }
